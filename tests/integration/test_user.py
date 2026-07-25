@@ -7,6 +7,7 @@
 
 import pytest
 import logging
+import uuid
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
@@ -22,15 +23,14 @@ logger = logging.getLogger(__name__)
 # Basic User object tests
 # ======================================================================================
 def test_user_string_output():
+
     user1 = User(
-        first_name="Test",
-        last_name="User",
-        email="test1@example.com",
+        id = uuid.uuid4(),
         username="testuser1",
-        password="password123"
+        email="test1@example.com",
     )
 
-    assert str(user1) == f'<User(name={user1.first_name} {user1.last_name}, email={user1.email})>'
+    assert str(user1) == f"<User(username={user1.username}, email={user1.email})>"
 # ======================================================================================
 # Basic Connection & Session Tests
 # ======================================================================================
@@ -78,11 +78,9 @@ def test_session_handling(db_session):
     assert initial_count == 0, f"Expected 0 users before test, found {initial_count}"
     
     user1 = User(
-        first_name="Test",
-        last_name="User",
-        email="test1@example.com",
+        id = uuid.uuid4(),
         username="testuser1",
-        password="password123"
+        email="test1@example.com",
     )
     db_session.add(user1)
     db_session.commit()
@@ -94,11 +92,9 @@ def test_session_handling(db_session):
     
     try:
         user2 = User(
-            first_name="Test",
-            last_name="User",
-            email="test1@example.com",  # Duplicate
-            username="testuser2",
-            password="password456"
+        id = uuid.uuid4(),
+        username="testuser2",
+        email="test1@example.com",
         )
         db_session.add(user2)
         db_session.commit()
@@ -112,11 +108,9 @@ def test_session_handling(db_session):
     logger.info(f"Found user1 after rollback: {found_user1.email}")
     
     user3 = User(
-        first_name="Test",
-        last_name="User",
-        email="test3@example.com",
+        id = uuid.uuid4(),
         username="testuser3",
-        password="password789"
+        email="test3@example.com",
     )
     db_session.add(user3)
     db_session.commit()
@@ -308,11 +302,9 @@ def test_user_persistence_after_constraint(db_session):
     - Confirm the original user still exists
     """
     initial_user_data = {
-        "first_name": "First",
-        "last_name": "User",
+        "id": f"{uuid.uuid4()}",
         "email": "first@example.com",
         "username": "firstuser",
-        "password": "password123"
     }
     initial_user = User(**initial_user_data)
     db_session.add(initial_user)
@@ -321,11 +313,9 @@ def test_user_persistence_after_constraint(db_session):
     
     try:
         duplicate_user = User(
-            first_name="Second",
-            last_name="User",
+            id = uuid.uuid4(),
             email="first@example.com",  # Duplicate
             username="seconduser",
-            password="password456"
         )
         db_session.add(duplicate_user)
         db_session.commit()

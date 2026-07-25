@@ -3,6 +3,7 @@
 import subprocess
 import time
 import logging
+import uuid
 from typing import Generator, Dict, List
 from contextlib import contextmanager
 
@@ -51,11 +52,9 @@ def create_fake_user() -> Dict[str, str]:
         A dict containing user fields with fake data.
     """
     return {
-        "first_name": fake.first_name(),
-        "last_name": fake.last_name(),
+        "id": uuid.uuid4(),
         "email": fake.unique.email(),  # Ensure uniqueness where necessary
         "username": fake.unique.user_name(),
-        "password": fake.password(length=12)
     }
 
 @contextmanager
